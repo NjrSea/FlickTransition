@@ -16,8 +16,8 @@ For instance, present a view controller in a tableview controller:
 
 ```swift
 var rect = tableView.rectForRowAtIndexPath(indexPath)
-        rect = tableView.convertRect(rect, toView: view)
-        FlickTransitionCoordinator.sharedCoordinator.presentViewController(WebViewController(), presentOriginFrame: rect)
+rect = tableView.convertRect(rect, toView: view)
+FlickTransitionCoordinator.sharedCoordinator.presentViewController(WebViewController(), presentOriginFrame: rect)
 ```
 
 Dismiss a view controller:
