@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol FlickTransitionDelegate: class {
+public protocol FlickTransitionDelegate: class {
     
     func scrollView() -> UIScrollView?
     func useInteractiveDismiss() -> Bool
@@ -43,7 +43,7 @@ private let verticalDismissCompletionThreshHold: CGFloat = 0.3
 private let horizontalDismissCompletionThreshHold: CGFloat = 0.35
 
 
-final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
+public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
     
     let presentAnimationController = PresentAnimationController()
     
@@ -192,7 +192,7 @@ final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
         }
     }
     
-    func presentViewController<T: UIViewController where T: FlickTransitionDelegate>(viewController: T, presentOriginFrame: CGRect? = nil) {
+    public func presentViewController<T: UIViewController where T: FlickTransitionDelegate>(viewController: T, presentOriginFrame: CGRect? = nil) {
         originFrame = presentOriginFrame
         delegate = viewController
         setUsingFlickInteractiveTransition?(false)
@@ -203,7 +203,7 @@ final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
         UIViewController.topMostViewController()?.presentViewController(viewController, animated: true, completion: nil)
     }
     
-    func dismissViewControllerNoninteractively(dismissDirection: Direction = .Right) {
+    public func dismissViewControllerNoninteractively(dismissDirection: Direction = .Right) {
         dismissAnimationController.dismissDirection = dismissDirection
         dismissAnimationController.dismissDuration = 0.2
         setUsingFlickInteractiveTransition?(false)
