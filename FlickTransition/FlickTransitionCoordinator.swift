@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol FlickTransitionDelegate: class {
+public protocol FlickTransitionDelegate: class {
     
     func scrollView() -> UIScrollView?
     func useInteractiveDismiss() -> Bool
@@ -43,7 +43,7 @@ private let verticalDismissCompletionThreshHold: CGFloat = 0.3
 private let horizontalDismissCompletionThreshHold: CGFloat = 0.35
 
 
-final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
+public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
     
     let presentAnimationController = PresentAnimationController()
     
