@@ -78,7 +78,7 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
     
     // MARK: Singleton
     
-    static var sharedCoordinator: FlickTransitionCoordinator {
+    public static var sharedCoordinator: FlickTransitionCoordinator {
         struct StructWrapper {
             static var instance = FlickTransitionCoordinator()
         }
@@ -220,25 +220,25 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
     
 }
 
-extension FlickTransitionCoordinator: UIViewControllerTransitioningDelegate {
+public extension FlickTransitionCoordinator: UIViewControllerTransitioningDelegate {
     
-    func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentAnimationController
     }
     
-    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return dismissAnimationController
     }
     
-    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return flickInteractionController.usingInteractiveTransition ? flickInteractionController : nil
     }
     
 }
 
-extension FlickTransitionCoordinator: UINavigationControllerDelegate {
+public extension FlickTransitionCoordinator: UINavigationControllerDelegate {
     
-    func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
+    public func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
         if let navigationController = navigationController as? FlickTransitionDelegate {
             delegate = navigationController
         }
@@ -246,9 +246,9 @@ extension FlickTransitionCoordinator: UINavigationControllerDelegate {
     
 }
 
-extension FlickTransitionCoordinator: UIGestureRecognizerDelegate {
+public extension FlickTransitionCoordinator: UIGestureRecognizerDelegate {
     
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
