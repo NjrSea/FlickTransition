@@ -12,6 +12,10 @@ Install via [CocoaPods](http://cocoapods.org) by adding this to your Podfile:
 pod 'FlickTransition'
 ```
 
+Then import to your swift file
+```swift
+import FlickTransition
+```
 For instance, present a view controller in a tableview controller:
 
 ```swift
@@ -25,3 +29,8 @@ Dismiss a view controller:
 ```swift
 FlickTransitionCoordinator.sharedCoordinator.dismissViewControllerNoninteractively()
 ```
+Note that view controller to be presented needs ot implement FlickTransitionDelegate to get interactive transition feature.
+
+##Demo
+
+Check the [demo repo](https://github.com/NjrSea/FlickTransitionDemo)
