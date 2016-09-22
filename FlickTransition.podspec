@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "FlickTransition"
-  s.version          = "1.0.1"
+  s.version          = "1.1.0"
   s.summary          = "A iOS UIViewController Transition"
   s.description      = <<-DESC
                       A iOS UIViewController Transition.

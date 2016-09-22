@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum Direction: Int {
+public enum Direction: Int {
     case Up
     case Down
     case Left
@@ -20,7 +20,7 @@ enum Direction: Int {
 
 extension UIPanGestureRecognizer {
     
-    var direction: Direction? {
+    public var direction: Direction? {
         let velocity = velocityInView(view)
         let vertical = fabs(velocity.y) > fabs(velocity.x)
         switch (vertical, velocity.x, velocity.y) {

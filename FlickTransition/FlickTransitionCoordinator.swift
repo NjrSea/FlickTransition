@@ -220,7 +220,7 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
     
 }
 
-public extension FlickTransitionCoordinator: UIViewControllerTransitioningDelegate {
+extension FlickTransitionCoordinator: UIViewControllerTransitioningDelegate {
     
     public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentAnimationController
@@ -236,7 +236,7 @@ public extension FlickTransitionCoordinator: UIViewControllerTransitioningDelega
     
 }
 
-public extension FlickTransitionCoordinator: UINavigationControllerDelegate {
+extension FlickTransitionCoordinator: UINavigationControllerDelegate {
     
     public func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
         if let navigationController = navigationController as? FlickTransitionDelegate {
@@ -246,7 +246,7 @@ public extension FlickTransitionCoordinator: UINavigationControllerDelegate {
     
 }
 
-public extension FlickTransitionCoordinator: UIGestureRecognizerDelegate {
+extension FlickTransitionCoordinator: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
