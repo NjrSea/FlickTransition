@@ -10,11 +10,11 @@ import UIKit
 
 protocol FlickProgressProvider {
     
-    var begin: (Void -> Void)? { set get }
+    var begin: ((Void) -> Void)? { set get }
     var changed: ((CGFloat, CGFloat)-> Void)? { set get }
-    var end: (Void -> Void)? { set get }
-    var cancel: (Void -> Void)? { set get }
-    var setUsingFlickInteractiveTransition: (Bool -> Void)? { set get }
+    var end: ((Void) -> Void)? { set get }
+    var cancel: ((Void) -> Void)? { set get }
+    var setUsingFlickInteractiveTransition: ((Bool) -> Void)? { set get }
     
 }
 
@@ -24,7 +24,7 @@ class FlickInteractionController: UIPercentDrivenInteractiveTransition {
     
     var interactionInProgress = false
     
-    private var shouldCompleteTransition = false
+    fileprivate var shouldCompleteTransition = false
     
     var isVertical = false
     
@@ -35,20 +35,20 @@ class FlickInteractionController: UIPercentDrivenInteractiveTransition {
             }
             progressProvider?.changed = { [weak self] (progress, completeProgress) in
                 self?.shouldCompleteTransition = progress > completeProgress
-                self?.updateInteractiveTransition(progress)
+                self?.update(progress)
             }
             progressProvider?.cancel = { [weak self] in
                 self?.interactionInProgress = false
-                self?.cancelInteractiveTransition()
+                self?.cancel()
             }
             progressProvider?.end = { [weak self] in
                 self?.interactionInProgress = false
                 if self?.shouldCompleteTransition == false {
                     self?.completionSpeed = (self?.isVertical == false) ? 0.5 : 0.25
-                    self?.cancelInteractiveTransition()
+                    self?.cancel()
                 } else {
                     self?.completionSpeed = 1.0
-                    self?.finishInteractiveTransition()
+                    self?.finish()
                 }
             }
             progressProvider?.setUsingFlickInteractiveTransition = { [weak self] (using) in

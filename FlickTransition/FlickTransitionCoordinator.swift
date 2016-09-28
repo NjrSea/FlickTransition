@@ -28,7 +28,7 @@ extension FlickTransitionDelegate {
         return false
     }
 
-    func setTransitionDelegate(coordinator: FlickTransitionCoordinator) {
+    func setTransitionDelegate(_ coordinator: FlickTransitionCoordinator) {
         (self as? UIViewController)?.transitioningDelegate = coordinator
     }
     
@@ -51,30 +51,30 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
     
     let flickInteractionController = FlickInteractionController()
     
-    private var defaultOriginFrame: CGRect {
+    fileprivate var defaultOriginFrame: CGRect {
         let height: CGFloat = 80.0
-        let width: CGFloat = UIScreen.mainScreen().bounds.size.width
-        let screenHeight: CGFloat = UIScreen.mainScreen().bounds.size.height
+        let width: CGFloat = UIScreen.main.bounds.size.width
+        let screenHeight: CGFloat = UIScreen.main.bounds.size.height
         return CGRect(x: 0, y: (screenHeight - height) / 2.0, width: width, height: height)
     }
     
-    private var panGesture: UIPanGestureRecognizer = {
+    fileprivate var panGesture: UIPanGestureRecognizer = {
         return UIPanGestureRecognizer()
     }()
     
-    private var originFrame: CGRect?
+    fileprivate var originFrame: CGRect?
     
     // MARK: FlickProgressProvider
     
-    var begin: (Void -> Void)?
+    var begin: ((Void) -> Void)?
     
     var changed: ((CGFloat, CGFloat)-> Void)?
     
-    var end: (Void -> Void)?
+    var end: ((Void) -> Void)?
     
-    var cancel: (Void -> Void)?
+    var cancel: ((Void) -> Void)?
     
-    var setUsingFlickInteractiveTransition: (Bool -> Void)?
+    var setUsingFlickInteractiveTransition: ((Bool) -> Void)?
     
     // MARK: Singleton
     
@@ -85,13 +85,13 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
         return StructWrapper.instance
     }
     
-    private weak var delegate: FlickTransitionDelegate? {
+    fileprivate weak var delegate: FlickTransitionDelegate? {
         didSet {
             if let delegate = delegate {
                 presentAnimationController.originFrame = originFrame ?? defaultOriginFrame
                 flickInteractionController.progressProvider = self
                 
-                if let scrollView = delegate.scrollView() where delegate.useInteractiveDismiss() {
+                if let scrollView = delegate.scrollView() , delegate.useInteractiveDismiss() {
                     scrollView.addGestureRecognizer(panGesture)
                     scrollView.bounces = false
                     panGesture.delegate = self
@@ -102,22 +102,22 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
         }
     }
     
-    private override init() {
+    fileprivate override init() {
         
     }
     
     // MARK: Gesture
     
-    private var inDismiss: Bool = false
+    fileprivate var inDismiss: Bool = false
     
-    func pan(pan: UIPanGestureRecognizer) {
+    func pan(_ pan: UIPanGestureRecognizer) {
         guard let scrollView = delegate?.scrollView(),
             let interactive = delegate?.useInteractiveDismiss(),
-            let shouldBegin = delegate?.shouldBeginInteractiveDismiss() where interactive && shouldBegin else {
+            let shouldBegin = delegate?.shouldBeginInteractiveDismiss() , interactive && shouldBegin else {
                 return
         }
         let coordinator = FlickTransitionCoordinator.sharedCoordinator
-        let translation = pan.translationInView(pan.view)
+        let translation = pan.translation(in: pan.view)
         let offset = scrollView.contentOffset.y
         let reachTheTop = offset == 0
         let reachTheBottom = ceil(offset) ==  ceil(scrollView.contentSize.height - scrollView.frame.height + scrollView.contentInset.bottom)
@@ -131,26 +131,26 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
         let endDismiss = {
             coordinator.end?()
             self.inDismiss = false
-            scrollView.scrollEnabled = true
+            scrollView.isScrollEnabled = true
         }
         let cancelDismiss = {
             coordinator.cancel?()
             self.inDismiss = false
-            scrollView.scrollEnabled = true
+            scrollView.isScrollEnabled = true
         }
         if !inDismiss {
-            if draggingDirection == .Left && pan.state == .Began {
+            if draggingDirection == .Left && pan.state == .began {
                 coordinator.dismissAnimationController.dismissDirection = .Left
                 coordinator.dismissAnimationController.dismissDuration = horizontalDismissDuration
                 inDismiss = true
                 beginDismiss()
-                scrollView.scrollEnabled = false
-            } else if draggingDirection == .Right && pan.state == .Began {
+                scrollView.isScrollEnabled = false
+            } else if draggingDirection == .Right && pan.state == .began {
                 coordinator.dismissAnimationController.dismissDirection = .Right
                 coordinator.dismissAnimationController.dismissDuration = horizontalDismissDuration
                 inDismiss = true
                 beginDismiss()
-                scrollView.scrollEnabled = false
+                scrollView.isScrollEnabled = false
             } else if reachTheBottom && draggingDirection == .Up {
                 coordinator.dismissAnimationController.dismissDirection = .Up
                 coordinator.dismissAnimationController.dismissDuration = verticalDismissDuration
@@ -164,11 +164,11 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
             }
         }
         guard inDismiss else {
-            pan.setTranslation(CGPoint.zero, inView: pan.view)
+            pan.setTranslation(CGPoint.zero, in: pan.view)
             return
         }
         switch pan.state {
-        case .Changed:
+        case .changed:
             switch coordinator.dismissAnimationController.dismissDirection {
             case .Left:
                 flickInteractionController.isVertical = false
@@ -183,16 +183,16 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
                 flickInteractionController.isVertical = true
                 coordinator.changed?(translation.y / pan.view!.frame.height, verticalDismissCompletionThreshHold)
             }
-        case .Ended:
+        case .ended:
             endDismiss()
-        case .Cancelled:
+        case .cancelled:
             cancelDismiss()
         default:
             break
         }
     }
     
-    public func presentViewController<T: UIViewController where T: FlickTransitionDelegate>(viewController: T, presentOriginFrame: CGRect? = nil) {
+    public func presentViewController<T: UIViewController>(_ viewController: T, presentOriginFrame: CGRect? = nil) where T: FlickTransitionDelegate {
         originFrame = presentOriginFrame
         delegate = viewController
         setUsingFlickInteractiveTransition?(false)
@@ -200,18 +200,18 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
         if let viewController = viewController as? UINavigationController {
             viewController.delegate = self
         }
-        UIViewController.topMostViewController()?.presentViewController(viewController, animated: true, completion: nil)
+        UIViewController.topMostViewController()?.present(viewController, animated: true, completion: nil)
     }
     
-    public func dismissViewControllerNoninteractively(dismissDirection: Direction = .Right) {
+    public func dismissViewControllerNoninteractively(_ dismissDirection: Direction = .Right) {
         dismissAnimationController.dismissDirection = dismissDirection
         dismissAnimationController.dismissDuration = 0.2
         setUsingFlickInteractiveTransition?(false)
         dismissViewController()
     }
     
-    private func dismissViewController() {
-        UIViewController.topMostViewController()?.dismissViewControllerAnimated(true, completion: { [weak self] in
+    fileprivate func dismissViewController() {
+        UIViewController.topMostViewController()?.dismiss(animated: true, completion: { [weak self] in
             if let presentingViewController = UIViewController.topMostViewController() as? FlickTransitionDelegate {
                 self?.delegate = presentingViewController
             }
@@ -222,15 +222,15 @@ public final class FlickTransitionCoordinator: NSObject, FlickProgressProvider {
 
 extension FlickTransitionCoordinator: UIViewControllerTransitioningDelegate {
     
-    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentAnimationController
     }
     
-    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return dismissAnimationController
     }
     
-    public func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return flickInteractionController.usingInteractiveTransition ? flickInteractionController : nil
     }
     
@@ -238,7 +238,7 @@ extension FlickTransitionCoordinator: UIViewControllerTransitioningDelegate {
 
 extension FlickTransitionCoordinator: UINavigationControllerDelegate {
     
-    public func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
+    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         if let navigationController = navigationController as? FlickTransitionDelegate {
             delegate = navigationController
         }
@@ -248,7 +248,7 @@ extension FlickTransitionCoordinator: UINavigationControllerDelegate {
 
 extension FlickTransitionCoordinator: UIGestureRecognizerDelegate {
     
-    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
