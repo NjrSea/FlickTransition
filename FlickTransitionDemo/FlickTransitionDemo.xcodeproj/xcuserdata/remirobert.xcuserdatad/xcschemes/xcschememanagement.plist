@@ -4,15 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>FlickTransition.xcscheme</key>
+		<key>FlickTransitionDemo.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>BB8CAED41D9BF74000792AE5</key>
+		<key>BBDBC5F81D9FB16900AE608D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
