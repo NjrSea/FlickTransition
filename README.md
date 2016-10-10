@@ -33,4 +33,4 @@ Note that view controller to be presented needs ot implement FlickTransitionDele
 
 ##Demo
 
-Check the [demo repo](https://github.com/NjrSea/FlickTransitionDemo)
+Run the example projects, from the *workspace* to play with the library.
