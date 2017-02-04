@@ -11,41 +11,43 @@ import UIKit
 class PresentAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     var originFrame = CGRect.zero
     
-    private let scaling: CGFloat = 0.95
+    fileprivate let scaling: CGFloat = 0.95
     
-    private var animatingView: UIView = {
+    fileprivate var animatingView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.whiteColor()
+        view.backgroundColor = UIColor.white
         return view
     }()
     
-    private var dimmingView: UIView = {
+    fileprivate var dimmingView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(white: 0, alpha: 0.5)
         return view
     }()
     
-    private var backgroundView: UIView = {
+    fileprivate var backgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.blackColor()
+        view.backgroundColor = UIColor.black
         return view
     }()
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 1.0
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        guard let fromVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey),
-            let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey),
-            let containerView = transitionContext.containerView() else {
+        guard let fromVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from),
+            let toVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) else {
                 return
         }
         
-        let finalFrame = transitionContext.finalFrameForViewController(toVC)
+        let containerView = transitionContext.containerView
+        let finalFrame = transitionContext.finalFrame(for: toVC)
         
-        let snapshot = fromVC.view.snapshotViewAfterScreenUpdates(false)
+        guard let snapshot = fromVC.view.snapshotView(afterScreenUpdates: false) else {
+            return
+        }
         snapshot.frame = fromVC.view.bounds
         dimmingView.frame = snapshot.bounds
         snapshot.addSubview(dimmingView)
@@ -54,29 +56,29 @@ class PresentAnimationController: NSObject, UIViewControllerAnimatedTransitionin
         backgroundView.frame = fromVC.view.bounds
         containerView.addSubview(animatingView)
         containerView.addSubview(toVC.view)
-        containerView.insertSubview(snapshot, atIndex: 0)
-        containerView.insertSubview(backgroundView, atIndex: 0)
+        containerView.insertSubview(snapshot, at: 0)
+        containerView.insertSubview(backgroundView, at: 0)
         
         animatingView.alpha = 0
         dimmingView.alpha = 0
-        fromVC.view.hidden = true
+        fromVC.view.isHidden = true
         toVC.view.alpha = 0
         
-        let duration = transitionDuration(transitionContext)
+        let duration = transitionDuration(using: transitionContext)
         let stepDuration = duration / 3.0
-        UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeCubic, animations: { 
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: { 
             
-            UIView.addKeyframeWithRelativeStartTime(0, relativeDuration: stepDuration, animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: stepDuration, animations: {
                 snapshot.layer.transform = CATransform3DScale(CATransform3DIdentity, self.scaling, self.scaling, 1)
                 self.dimmingView.alpha = 1.0
                 self.animatingView.alpha = 1.0
             })
             
-            UIView.addKeyframeWithRelativeStartTime(stepDuration, relativeDuration: stepDuration, animations: {
+            UIView.addKeyframe(withRelativeStartTime: stepDuration, relativeDuration: stepDuration, animations: {
                 self.animatingView.frame = finalFrame
             })
             
-            UIView.addKeyframeWithRelativeStartTime(2 * stepDuration, relativeDuration: stepDuration, animations: {
+            UIView.addKeyframe(withRelativeStartTime: 2 * stepDuration, relativeDuration: stepDuration, animations: {
                 toVC.view.alpha = 1
             })
             
@@ -85,8 +87,8 @@ class PresentAnimationController: NSObject, UIViewControllerAnimatedTransitionin
             self.dimmingView.removeFromSuperview()
             snapshot.removeFromSuperview()
             self.backgroundView.removeFromSuperview()
-            fromVC.view.hidden = false
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
+            fromVC.view.isHidden = false
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         
     }

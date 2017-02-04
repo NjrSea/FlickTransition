@@ -10,30 +10,32 @@ import UIKit
 
 class DismissAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
 
-    private let scaling: CGFloat = 0.95
+    fileprivate let scaling: CGFloat = 0.95
     
     var dismissDirection: Direction = .Left
     var dismissDuration = 0.2
     
-    private var dimmingView: UIView = {
+    fileprivate var dimmingView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(white: 0, alpha: 0.4)
         return view
     }()
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return dismissDuration
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        guard let fromVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey),
-            let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey),
-            let containerView = transitionContext.containerView() else {
+        guard let fromVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from),
+            let toVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) else {
                 return
         }
      
-        let snapshot = toVC.view.snapshotViewAfterScreenUpdates(true)
+        let containerView = transitionContext.containerView
+        guard let snapshot = toVC.view.snapshotView(afterScreenUpdates: true) else {
+            return
+        }
         snapshot.addSubview(dimmingView)
         snapshot.frame = toVC.view.bounds
         
@@ -41,13 +43,13 @@ class DismissAnimationController: NSObject, UIViewControllerAnimatedTransitionin
         dimmingView.alpha = 1.0
         
         snapshot.layer.transform = CATransform3DScale(CATransform3DIdentity, self.scaling, self.scaling, 1)
-        containerView.insertSubview(snapshot, atIndex: 0)
+        containerView.insertSubview(snapshot, at: 0)
         
-        toVC.view.hidden = true
+        toVC.view.isHidden = true
         
-        let duration = transitionDuration(transitionContext)
+        let duration = transitionDuration(using: transitionContext)
         
-        UIView.animateWithDuration(duration, delay: 0, options: .CurveLinear, animations: {
+        UIView.animate(withDuration: duration, delay: 0, options: .curveLinear, animations: {
             snapshot.layer.transform = CATransform3DIdentity
             self.dimmingView.alpha = 0.0
             var frame = fromVC.view.frame
@@ -68,8 +70,8 @@ class DismissAnimationController: NSObject, UIViewControllerAnimatedTransitionin
         }) { _ in
             snapshot.removeFromSuperview()
             self.dimmingView.removeFromSuperview()
-            toVC.view.hidden = false
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
+            toVC.view.isHidden = false
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }
     
